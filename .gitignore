@@ -3,3 +3,11 @@ sources
 behavioral/results
 behavioral/designMat
 data
+results
+plots
+imaging/results
+figures
+notes
+behavioral/plots
+imaging/plots
+.DS_Store
