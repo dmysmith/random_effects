@@ -2,7 +2,8 @@
 
 # Create RDS file for random effects imaging analysis 
 # Diana Smith
-# March 2022
+# Created March 2022
+# Last Updated August 2022
 
 ################################
 # load packages
@@ -18,18 +19,18 @@ library(pracma)
 # Define paths
 
 # tabulated ABCD data 
-inpath <- '/space/abcd-sync/4.0/tabulated/released'
+inpath <- '/space/amdale/1/tmp/ABCD_cache/abcd-sync/4.0/tabulated/released'
 
 # genetic PCs subject data
-pcfile <- '/space/gwas-syn2/1/data/GWAS/ABCD/genotype/plink2.eigenvec'
+pcfile <- '/space/amdale/1/tmp/ABCD_cache/abcd-sync/4.0/support_files/ABCD_rel4.0_unfiltered/ABCD_rel4.0_pcs_base_2yr.txt'
 
 # path to the output RDS file 
-outpath <- '/home/d9smith/projects/random_effects'
+outpath <- '/space/syn50/1/data/ABCD/d9smith/random_effects/imaging'
 fname <- 'nda4.0_offrel.RDS'
 outmatfile <- paste0(outpath, '/', fname)
 
 # cmig_utils/r directory
-funcpath <- '/home/d9smith/github/cmig_tools/cmig_tools_utils/r'
+funcpath <- '/home/d9smith/github/cmig_tools_internal/cmig_tools_utils/r'
 
 # The functionmakeDEAPdemos.R requires the path to the directory which 
 # contains the tabulated ABCD data defined explicitly here
@@ -66,7 +67,7 @@ outmat <- phys
 # Load the genetic PCs file (this does not require loadtxt.R!) 
 pc_mat <- read.delim(pcfile)
 # Get just the first 10 PCs and write to a dataframe  
-pc <- data.frame(pc_mat[,c('IID','PC1','PC2','PC3','PC4','PC5', 'PC6', 'PC7', 'PC8', 'PC9', 'PC10')])
+pc <- data.frame(pc_mat[,c('src_subject_id','genesis_PC1','genesis_PC2','genesis_PC3','genesis_PC4','genesis_PC5', 'genesis_PC6', 'genesis_PC7', 'genesis_PC8', 'genesis_PC9', 'genesis_PC10')])
 names(pc) <- c('src_subject_id','PC1','PC2','PC3','PC4','PC5', 'PC6', 'PC7', 'PC8', 'PC9', 'PC10')
 # Combine with the physical health variables. 
 outmat <- join(outmat, pc, by='src_subject_id', match = "all")
