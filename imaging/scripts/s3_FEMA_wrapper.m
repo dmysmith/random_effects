@@ -91,7 +91,7 @@ if doVertexwise
 
     end
 
-    ico = 7; % icosahedral number
+    ico = 5; % icosahedral number
 
     % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
 
@@ -141,7 +141,8 @@ if doVoxelwise
     dirname_imaging = fullfile(abcd_sync_path, dataRelease, '/imaging_concat/voxelwise/', atlasVersion, modality); % filepath to imaging data
     dirname_out = fullfile(outDir,dataRelease); % filepath to save FEMA output
 
-    modality = {'RNT' 'RNI' 'RND' 'RIF' 'RDF' 'HNT' 'HNI' 'HND' 'HIF' 'HDF' 'FNI' 'FA' 'MD'};
+    % modality = {'RNT' 'RNI' 'RND' 'RIF' 'RDF' 'HNT' 'HNI' 'HND' 'HIF' 'HDF' 'FNI' 'FA' 'MD'};
+    modality = {'FA' 'MD'};
 
     % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
     for m=1:length(modality)
@@ -192,7 +193,7 @@ if 0
       
             end
       
-            ico = 7; % icosahedral number
+            ico = 5; % icosahedral number
       
             % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
       
@@ -292,7 +293,7 @@ if 0
       
             end
       
-            ico = 7; % icosahedral number
+            ico = 5; % icosahedral number
       
             % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
       
