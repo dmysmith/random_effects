@@ -23,7 +23,7 @@ abcd_sync_path=cfg.data.abcd_sync;
 
 % Specify which imaging analyses to demo
 doVertexwise = 1; % run vertexwise analysis (datatype = 'vertex')
-doVoxelwise = 1; % run voxelwise analysis (datatype = 'voxel')
+doVoxelwise = 0; % run voxelwise analysis (datatype = 'voxel')
 doMOSTest = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,7 +91,7 @@ if doVertexwise
 
     end
 
-    ico = 5; % icosahedral number
+    ico = 7; % icosahedral number
 
     % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
 
