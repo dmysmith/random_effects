@@ -59,7 +59,8 @@ source(paste0(funcpath, '/', 'makeDEAPdemos.R'))
 phys <- loadtxt(physfile)
 # Extract the variables of interest
 physvar <- c('src_subject_id', 'eventname', 'interview_age', 'sex')
-phys <- phys[,physvar]
+timepoints <- c('baseline_year_1_arm_1','2_year_follow_up_y_arm_1')
+phys <- phys[phys$eventname %in% timepoints,physvar]
 # Write to a dataframe 
 outmat <- phys
 
@@ -67,10 +68,10 @@ outmat <- phys
 # Load the genetic PCs file (this does not require loadtxt.R!) 
 pc_mat <- read.delim(pcfile)
 # Get just the first 10 PCs and write to a dataframe  
-pc <- data.frame(pc_mat[,c('src_subject_id','genesis_PC1','genesis_PC2','genesis_PC3','genesis_PC4','genesis_PC5', 'genesis_PC6', 'genesis_PC7', 'genesis_PC8', 'genesis_PC9', 'genesis_PC10')])
-names(pc) <- c('src_subject_id','PC1','PC2','PC3','PC4','PC5', 'PC6', 'PC7', 'PC8', 'PC9', 'PC10')
+pc <- data.frame(pc_mat[,c('src_subject_id','eventname','genesis_PC1','genesis_PC2','genesis_PC3','genesis_PC4','genesis_PC5', 'genesis_PC6', 'genesis_PC7', 'genesis_PC8', 'genesis_PC9', 'genesis_PC10')])
+names(pc) <- c('src_subject_id','eventname','PC1','PC2','PC3','PC4','PC5', 'PC6', 'PC7', 'PC8', 'PC9', 'PC10')
 # Combine with the physical health variables. 
-outmat <- join(outmat, pc, by='src_subject_id', match = "all")
+outmat <- join(outmat, pc, by=c('src_subject_id','eventname'), match = "all")
 
 ################################
 # Load the MRI info instrument  and extract the device serial number and software version 
