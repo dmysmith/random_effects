@@ -5,6 +5,17 @@
 %% Last Updated August 2022
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Specify where to store results
+outpath = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-01-30';
+
+if ~exist(outpath, 'dir')
+      mkdir(outpath)
+end
+
+% start diary
+diary_path=strcat(outpath,'/','diary_', datestr(now, 'yyyy-mm-dd_HHMM'));
+diary(diary_path);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADD ALL ABCD CMIG tools directories to MATLAB path:
 addpath(genpath('/home/d9smith/github/cmig_tools_internal'))
@@ -22,7 +33,7 @@ abcd_sync_path=cfg.data.abcd_sync;
 
 
 % Specify which imaging analyses to demo
-doVertexwise = 0; % run vertexwise analysis (datatype = 'vertex')
+doVertexwise = 1; % run vertexwise analysis (datatype = 'vertex')
 doVoxelwise = 1; % run voxelwise analysis (datatype = 'voxel')
 doMOSTest = 0;
 
@@ -35,14 +46,12 @@ dirname_tabulated = fullfile(abcd_sync_path,'4.0','tabulated/released'); %KNOWN 
 fname_pihat = fullfile('/space/amdale/1/tmp/ABCD_cache/abcd-sync/4.0/genomics/ABCD_rel4.0_grm.mat'); 
 
 %To run multiple deisgn matrices with same imaging data populate each row with path to each design matrix
-designmat_dir = '/space/syn50/1/data/ABCD/d9smith/random_effects/imaging/designMat';
+designmat_dir = '/space/syn50/1/data/ABCD/d9smith/random_effects/designMat';
 designmat_file = dir(sprintf('%s/designMat*.txt', designmat_dir));
 designmat_file = {designmat_file.name}';
 fname_design = strcat(designmat_dir, '/', designmat_file);
 
-% Specify where to store results
 outdir_file = strrep(designmat_file, '.txt', '');
-outpath = '/space/syn50/1/data/ABCD/d9smith/random_effects/analysis/imaging/results_20220825';
 outdir_path=strcat(outpath,'/',outdir_file);
 
 % Optional inputs for `FEMA_wrapper.m` depending on analysis
@@ -55,15 +64,17 @@ tfce = 0; % If wanting to run threshold free cluster enhancement (TFCE) set tfce
 colsinterest=[1]; % Only used if nperms>0. Indicates which IVs (columns of X) the permuted null distribution and TFCE statistics will be saved for (default 1, i.e. column 1)
 niter=0; % decrease number of iterations -- change when you want to run for real!
 
+fname_pregnancyID = fullfile('/home/sabad/requests/pregnancy_ID_01172023.csv');
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 1: F, A, S, E
+% SECTION 1: F, A, T, S, E
 
 % specify where to store results
-outdir_label = 'FASE';
+outdir_label = 'FATSE';
 outDir = strcat(outdir_path, '/', outdir_label);
 
 % specify random effects
-RandomEffects = {'F','A','S','E'}; 
+RandomEffects = {'F','A','T','S','E'}; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% DEMO VERTEXWISE ANALYSIS
@@ -141,8 +152,8 @@ if doVoxelwise
     dirname_imaging = fullfile(abcd_sync_path, dataRelease, '/imaging_concat/voxelwise/', atlasVersion, modality); % filepath to imaging data
     dirname_out = fullfile(outDir,dataRelease); % filepath to save FEMA output
 
-    % modality = {'RNT' 'RNI' 'RND' 'RIF' 'RDF' 'HNT' 'HNI' 'HND' 'HIF' 'HDF' 'FNI' 'FA' 'MD'};
-    modality = {'RND' 'RNI'};
+    modality = {'RNT' 'RNI' 'RND' 'RIF' 'RDF' 'HNT' 'HNI' 'HND' 'HIF' 'HDF' 'FNI' 'FA' 'MD' 'JA'};
+    % modality = {'RND' 'RNI'};
 
     % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
     for m=1:length(modality)
@@ -150,11 +161,13 @@ if doVoxelwise
 
       % Run FEMA
       [fpaths_out beta_hat beta_se zmat logpmat sig2tvec sig2mat beta_hat_perm beta_se_perm zmat_perm sig2tvec_perm sig2mat_perm inputs mask tfce_perm analysis_params] = FEMA_wrapper(fstem_imaging, fname_design, dirname_out, dirname_tabulated, dirname_imaging, datatype,...
-      'ranknorm', ranknorm, 'contrasts', contrasts, 'RandomEffects', RandomEffects, 'pihat_file', fname_pihat, 'nperms', nperms, 'mediation',mediation,'PermType',PermType,'tfce',tfce,'colsinterest',colsinterest);
+      'ranknorm', ranknorm, 'contrasts', contrasts, 'RandomEffects', RandomEffects, 'pihat_file', fname_pihat, 'nperms', nperms, 'mediation',mediation,'PermType',PermType,'tfce',tfce,'preg_file',fname_pregnancyID,'colsinterest',colsinterest);
 
     end    
 
 end
+
+diary off
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2: F, S, E - NOT DOING FOR FLUX

@@ -25,7 +25,7 @@ inpath <- '/space/amdale/1/tmp/ABCD_cache/abcd-sync/4.0/tabulated/released'
 pcfile <- '/space/amdale/1/tmp/ABCD_cache/abcd-sync/4.0/support_files/ABCD_rel4.0_unfiltered/ABCD_rel4.0_pcs_base_2yr.txt'
 
 # path to the output RDS file 
-outpath <- '/space/syn50/1/data/ABCD/d9smith/random_effects/imaging'
+outpath <- '/space/syn50/1/data/ABCD/d9smith/random_effects/data'
 fname <- 'nda4.0_offrel.RDS'
 outmatfile <- paste0(outpath, '/', fname)
 
