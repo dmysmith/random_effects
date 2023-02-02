@@ -1,4 +1,4 @@
-function [fh] = showsurf_ds(dirname_out, fstem_imaging, dataRelease, ico, ncoeff, savepath)
+function [fh] = showsurf_ds(dirname_out, fstem_imaging, dataRelease, ico, RandomEffects, savepath)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% REQUIREMENTS TO RUN showSurf.m
@@ -15,7 +15,7 @@ function [fh] = showsurf_ds(dirname_out, fstem_imaging, dataRelease, ico, ncoeff
 % fstem_imaging
 % dataRelease
 % ico
-% ncoeff (e.g., 1:4, 1:5)
+% RandomEffects
 % savepath
 
 
@@ -42,7 +42,7 @@ icnvert = size(icsurfs{icnum}.vertices,1); % indices of vertices for specified i
 % The demo below will produce figures for the IVs (columns of X) from
 % the FEMA analysis specfiied by `ncoeff`
 
-% ncoeff=1:4;
+ncoeff=1:length(RandomEffects);
 
 %% DIANA TODO: make matrix of vertvals so that you can plot them all together!
 
@@ -86,5 +86,5 @@ for coeffnum = ncoeff
       cb.Box = 'off';
       cb.Position = [.92 .08 .02 .8150];
       caxis(clim);
-      saveas(fh, sprintf('%s/%s.png',savepath, replace(dirname_out(68:end),'/','_')))
+      saveas(fh, sprintf('%s/%s_%s_%s.png',savepath, fstem_imaging, replace(dirname_out(68:end),'/','_'),RandomEffects{coeffnum}));
 end

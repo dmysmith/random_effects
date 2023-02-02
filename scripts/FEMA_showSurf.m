@@ -39,7 +39,8 @@ fstem_imaging = 'area_ic5_sm1000'; % thickness_ic5_sm1000 area_ic5_sm1000 sulc_i
 dataRelease = '4.0'; % ABCD data release
 ico = 5; % ico number
 ncoeff = 1:5;
+RandomEffects = {'F' 'A' 'T' 'S' 'E'};
 savepath = '/home/d9smith/tmp/2023-02-01';
 
 
-showsurf_ds(dirname_out, fstem_imaging, dataRelease, ico, ncoeff, savepath);
+showsurf_ds(dirname_out, fstem_imaging, dataRelease, ico, RandomEffects, savepath);
