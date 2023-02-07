@@ -1,4 +1,4 @@
-function [fh] = showsurf_ds(dirname_out, fstem_imaging, dataRelease, ico, RandomEffects, savepath)
+function [fh] = showsurf_randomeffects(dirname_out, fstem_imaging, dataRelease, ico, RandomEffects, savepath)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% REQUIREMENTS TO RUN showSurf.m

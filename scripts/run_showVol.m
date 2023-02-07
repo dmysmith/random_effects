@@ -53,18 +53,24 @@
 
 % 1) Specify where FEMA_wrapper output is saved and load into MATLAB workspace
 
-dirname_out='/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-01-30/designMat1_dmri_AgeSexScanSoft/FATSE/4.0'; % directory of where FEMA output saved
-fstem_imaging='RNI'; %imaging phenotype used for analysis
-% fname_results = sprintf('%s/FEMA_wrapper_output_voxel_%s.mat',dirname_out,fstem_imaging);
-% %load(fname_results,'vol_beta_hat','vol_z','colnames_model'); % load FEMA output - only need some variables
-% load(fname_results)
+dirname_out='/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-01-30'; % directory of where FEMA output saved
+designMat='designMat3_dmri_AgeSexScanSoftEducIncPcs';
+RandomEffects = {'F' 'A' 'T' 'S' 'E'};
+fstem_imaging='HNT'; % MD FA RNI RND FNI RNT HNT JA (NOTE: use t1w for JA)
 
 % 2) Specify ABCD release version as the atlas used for voxelwise registration is different from 3.0 to 4.0
-
 dataRelease='4.0';
-RandomEffects = {'F' 'A' 'T' 'S' 'E'};
+
+% 3) Specify path where you would like to save images
+savepath = '/home/d9smith/projects/random_effects/plots';
+savepath = sprintf('%s/%s/%s/%s',savepath, designMat, strcat(RandomEffects{:}), fstem_imaging);
+
+% create directory (if it doesn't exist) and navigate there
+if ~exist(savepath,'dir'), mkdir(savepath); end
+cd(savepath);
 
 % call showvol_randomeffects
+dirname_out = sprintf('%s/%s/%s/%s', dirname_out, designMat, strcat(RandomEffects{:}),dataRelease);
 showvol_randomeffects(dirname_out, fstem_imaging, dataRelease, RandomEffects);
 
 % While running, use these keyboard shortcuts to save images
