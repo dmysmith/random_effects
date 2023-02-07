@@ -6,7 +6,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Specify where to store results
-outpath = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-01-30';
+outpath = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-02-07';
 
 if ~exist(outpath, 'dir')
       mkdir(outpath)
@@ -69,12 +69,13 @@ fname_pregnancyID = fullfile('/home/sabad/requests/pregnancy_ID_01172023.csv');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 1: F, A, T, S, E
 
-% specify where to store results
-outdir_label = 'FATSE';
-outDir = strcat(outdir_path, '/', outdir_label);
-
 % specify random effects
+% RandomEffects = {'F','A','T','S','E'};
 RandomEffects = {'F','A','T','S','E'}; 
+
+% specify where to store results
+outdir_label = strcat(RandomEffects{:});
+outDir = strcat(outdir_path, '/', outdir_label);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% DEMO VERTEXWISE ANALYSIS
@@ -168,203 +169,3 @@ if doVoxelwise
 end
 
 diary off
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 2: F, S, E - NOT DOING FOR FLUX
-if 0
-
-      % specify where to store results
-      outdir_label = 'FSE';
-      outDir = strcat(outdir_path, '/', outdir_label);
-
-      % specify random effects
-      RandomEffects = {'F','S','E'};
-
-      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      %% DEMO VERTEXWISE ANALYSIS
-
-      % This demo produces vertexwise age associations with cortical thickness controlling for 
-      % sociodemographic information and genetic ancestry.  The results can be visualised using
-      % `showSurf_demo.m`
-
-      if doVertexwise
-
-            datatype='vertex'; % imaging modality selected
-            modality='smri'; % concatenated imaging data stored in directories based on modality (smri, dmri, tfmri, roi)
-      
-            % Uses path structure in abcd-sync to automatically find data
-            dirname_imaging = fullfile(abcd_sync_path, dataRelease, 'imaging_concat/vertexwise/', modality); % filepath to imaging data
-            dirname_out = fullfile(outDir); % filepath to save FEMA output
-      
-            switch dataRelease
-                  case '3.0'
-                        %fstem_imaging = 'area-sm256';
-                        fstems = 'thickness-sm256'; % name of imaging phenotype
-                        %fstem_imaging = 'sulc-sm256';
-                  case '4.0'
-                        fstems ={'area_ic5_sm1000' 'sulc_ic5_sm1000' 'thickness_ic5_sm1000'}; % name of imaging phenotype - data already saved as ico=5
-      
-            end
-      
-            ico = 5; % icosahedral number
-      
-            % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
-      
-            for m=1:length(fstems)
-            fstem_imaging = fstems{m};
-            % RUN FEMA
-            [fpaths_out beta_hat beta_se zmat logpmat sig2tvec sig2mat beta_hat_perm beta_se_perm zmat_perm sig2tvec_perm sig2mat_perm inputs mask tfce_perm analysis_params] = FEMA_wrapper(fstem_imaging, fname_design, dirname_out, dirname_tabulated, dirname_imaging, datatype,...
-            'ico', ico, 'ranknorm', ranknorm, 'contrasts', contrasts, 'RandomEffects', RandomEffects, 'pihat_file', fname_pihat, 'nperms', nperms, 'mediation',mediation,'PermType',PermType,'tfce',tfce,'colsinterest',colsinterest);
-            end
-            
-            %%
-            if doMOSTest && nperms>0
-                  % Compute the MOSTest statistics with the permutation scheme
-                  if strcmp(modality,'smri')
-                        % Set regularization factor
-                        % has only been computed for smri thickness & surface area for now
-                        if contains(fstem_imaging, 'thickness')
-                              k=47;
-                        elseif contains(fstem_imaging, 'area')
-                              k=79;
-                        else
-                              warning('Regularization has not been optimized for this set of parameters. MOSTest results are probably off.')
-                        end
-                        alpha = 0.05;
-                        col_interest = 1;
-                        [vertex_MOSTest_perm_pval, vertex_MOSTest_extrap_pval, vertex_MOSTest_mostvec, ...
-                              vertex_MOSTest_cthresh] = FEMA_MOSTest(zmat_perm, col_interest, alpha, k);
-                        sprintf('MOSTest results: p-value=%.3f, extrapolated p-value=%.3f.', perm_pval, extrap_pval)
-                  end
-            end
-      end
-      
-      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      %% DEMO VOXELWISE ANALYSES
-      
-      % This demo produces voxelwise age associations with restricted normalised isotropic (RNI) diffusio controlling for 
-      % sociodemographic information and genetic ancestry.  The results can be visualised using
-      % `showVol_demo.m`
-      
-      if doVoxelwise
-      
-            datatype = 'voxel'; % imaging modality selected
-            modality='dmri'; % concatenated imaging data stored in directories based on modality (smri, dmri, tfmri, roi)
-      
-            % uses path structure in abcd-sync to automatically find data
-            dirname_imaging = fullfile(abcd_sync_path, dataRelease, '/imaging_concat/voxelwise/', atlasVersion, modality); % filepath to imaging data
-            dirname_out = fullfile(outDir,dataRelease); % filepath to save FEMA output
-      
-            modality = {'RNT' 'RNI' 'RND' 'RIF' 'RDF' 'HNT' 'HNI' 'HND' 'HIF' 'HDF' 'FNI' 'FA' 'MD'};
-      
-            % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
-            for m=1:length(modality)
-            fstem_imaging=modality{m};
-      
-            % Run FEMA
-            [fpaths_out beta_hat beta_se zmat logpmat sig2tvec sig2mat beta_hat_perm beta_se_perm zmat_perm sig2tvec_perm sig2mat_perm inputs mask tfce_perm analysis_params] = FEMA_wrapper(fstem_imaging, fname_design, dirname_out, dirname_tabulated, dirname_imaging, datatype,...
-            'ranknorm', ranknorm, 'contrasts', contrasts, 'RandomEffects', RandomEffects, 'pihat_file', fname_pihat, 'nperms', nperms, 'mediation',mediation,'PermType',PermType,'tfce',tfce,'colsinterest',colsinterest);
-            end    
-      
-      end
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 3: F, A, D, S, E - NOT DOING FOR FLUX
-if 0
-
-      % specify where to store results
-      outdir_label = 'FADSE';
-      outDir = strcat(outdir_path, '/', outdir_label);
-
-      % specify random effects
-      RandomEffects = {'F','A', 'D', 'S','E'};
-
-      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      %% DEMO VERTEXWISE ANALYSIS
-
-      % This demo produces vertexwise age associations with cortical thickness controlling for 
-      % sociodemographic information and genetic ancestry.  The results can be visualised using
-      % `showSurf_demo.m`
-
-      if doVertexwise
-
-            datatype='vertex'; % imaging modality selected
-            modality='smri'; % concatenated imaging data stored in directories based on modality (smri, dmri, tfmri, roi)
-      
-            % Uses path structure in abcd-sync to automatically find data
-            dirname_imaging = fullfile(abcd_sync_path, dataRelease, 'imaging_concat/vertexwise/', modality); % filepath to imaging data
-            dirname_out = fullfile(outDir); % filepath to save FEMA output
-      
-            switch dataRelease
-                  case '3.0'
-                        %fstem_imaging = 'area-sm256';
-                        fstems = 'thickness-sm256'; % name of imaging phenotype
-                        %fstem_imaging = 'sulc-sm256';
-                  case '4.0'
-                        fstems ={'area_ic5_sm1000' 'sulc_ic5_sm1000' 'thickness_ic5_sm1000'}; % name of imaging phenotype - data already saved as ico=5
-      
-            end
-      
-            ico = 5; % icosahedral number
-      
-            % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
-      
-            for m=1:length(fstems)
-            fstem_imaging = fstems{m};
-            % RUN FEMA
-            [fpaths_out beta_hat beta_se zmat logpmat sig2tvec sig2mat beta_hat_perm beta_se_perm zmat_perm sig2tvec_perm sig2mat_perm inputs mask tfce_perm analysis_params] = FEMA_wrapper(fstem_imaging, fname_design, dirname_out, dirname_tabulated, dirname_imaging, datatype,...
-            'ico', ico, 'ranknorm', ranknorm, 'contrasts', contrasts, 'RandomEffects', RandomEffects, 'pihat_file', fname_pihat, 'nperms', nperms, 'mediation',mediation,'PermType',PermType,'tfce',tfce,'colsinterest',colsinterest);
-            end
-            
-            %%
-            if doMOSTest && nperms>0
-                  % Compute the MOSTest statistics with the permutation scheme
-                  if strcmp(modality,'smri')
-                        % Set regularization factor
-                        % has only been computed for smri thickness & surface area for now
-                        if contains(fstem_imaging, 'thickness')
-                              k=47;
-                        elseif contains(fstem_imaging, 'area')
-                              k=79;
-                        else
-                              warning('Regularization has not been optimized for this set of parameters. MOSTest results are probably off.')
-                        end
-                        alpha = 0.05;
-                        col_interest = 1;
-                        [vertex_MOSTest_perm_pval, vertex_MOSTest_extrap_pval, vertex_MOSTest_mostvec, ...
-                              vertex_MOSTest_cthresh] = FEMA_MOSTest(zmat_perm, col_interest, alpha, k);
-                        sprintf('MOSTest results: p-value=%.3f, extrapolated p-value=%.3f.', perm_pval, extrap_pval)
-                  end
-            end
-      end
-      
-      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      %% DEMO VOXELWISE ANALYSES
-      
-      % This demo produces voxelwise age associations with restricted normalised isotropic (RNI) diffusio controlling for 
-      % sociodemographic information and genetic ancestry.  The results can be visualised using
-      % `showVol_demo.m`
-      
-      if doVoxelwise
-      
-            datatype = 'voxel'; % imaging modality selected
-            modality='dmri'; % concatenated imaging data stored in directories based on modality (smri, dmri, tfmri, roi)
-      
-            % uses path structure in abcd-sync to automatically find data
-            dirname_imaging = fullfile(abcd_sync_path, dataRelease, '/imaging_concat/voxelwise/', atlasVersion, modality); % filepath to imaging data
-            dirname_out = fullfile(outDir,dataRelease); % filepath to save FEMA output
-      
-            modality = {'RNT' 'RNI' 'RND' 'RIF' 'RDF' 'HNT' 'HNI' 'HND' 'HIF' 'HDF' 'FNI' 'FA' 'MD'};
-      
-            % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
-            for m=1:length(modality)
-            fstem_imaging=modality{m};
-      
-            % Run FEMA
-            [fpaths_out beta_hat beta_se zmat logpmat sig2tvec sig2mat beta_hat_perm beta_se_perm zmat_perm sig2tvec_perm sig2mat_perm inputs mask tfce_perm analysis_params] = FEMA_wrapper(fstem_imaging, fname_design, dirname_out, dirname_tabulated, dirname_imaging, datatype,...
-            'ranknorm', ranknorm, 'contrasts', contrasts, 'RandomEffects', RandomEffects, 'pihat_file', fname_pihat, 'nperms', nperms, 'mediation',mediation,'PermType',PermType,'tfce',tfce,'colsinterest',colsinterest);
-            end    
-      
-      end
-end
