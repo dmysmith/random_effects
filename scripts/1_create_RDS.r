@@ -41,12 +41,14 @@ physfile <- 'abcd_ant01.txt'
 img_tabfile1 <- 'abcd_smrip10201.txt'
 MRIinfofile <- 'abcd_mri01.txt'
 imgincfile <- 'abcd_imgincl01.txt';
+devhxfile <- 'dhx01.txt';
 
 # full paths to these files 
 physfile <- paste0(inpath, '/', physfile)
 img_tabfile1 <- paste0(inpath, '/', img_tabfile1)
 imgincfile <- paste0(inpath, '/', imgincfile)
 MRIinfofile <- paste0(inpath, '/', MRIinfofile)
+devhxfile <- paste0(inpath, '/', devhxfile)
 
 ################################
 
@@ -71,7 +73,7 @@ pc_mat <- read.delim(pcfile)
 pc <- data.frame(pc_mat[,c('src_subject_id','eventname','genesis_PC1','genesis_PC2','genesis_PC3','genesis_PC4','genesis_PC5', 'genesis_PC6', 'genesis_PC7', 'genesis_PC8', 'genesis_PC9', 'genesis_PC10')])
 names(pc) <- c('src_subject_id','eventname','PC1','PC2','PC3','PC4','PC5', 'PC6', 'PC7', 'PC8', 'PC9', 'PC10')
 # Combine with the physical health variables. 
-outmat <- join(outmat, pc, by=c('src_subject_id','eventname'), match = "all")
+outmat <- join(outmat, pc, by=c('src_subject_id', 'eventname'), match = "all")
 
 ################################
 # Load the MRI info instrument  and extract the device serial number and software version 
@@ -120,6 +122,19 @@ imgincvar <- c('src_subject_id', 'eventname', grep('include', names(imginc), val
 imginc <- imginc[, imgincvar]
 # Combine with the previously extracted variables
 outmat <- join(outmat, imginc, by=c('src_subject_id', 'eventname'))
+
+################################
+# Load the developmental history file
+devhx <- loadtxt(devhxfile)
+# Extract the variables of interest
+devvar <- c('src_subject_id', 'devhx_12a_p', 'devhx_12_p')
+devhx <- devhx[,devvar]
+
+# if premature, use weeks premature to calculate gestational age at birth
+devhx$gest_age = ifelse(devhx$devhx_12a_p==0,40,ifelse(devhx$devhx_12a_p==1,40 - (na_if(devhx$devhx_12_p, 999)),NA))
+
+# Combine with the previously extracted variables
+outmat <- join(outmat, devhx, by='src_subject_id', match = "all")
 
 ################################
 # Save the "outmat" as an RDS 
