@@ -28,7 +28,7 @@ outpath <- '/space/syn50/1/data/ABCD/d9smith/random_effects/designMat'
 # Design Matrix 1 - dmri_inc sample, age + sex + scanner + software
 
 # Define the name of your design matrix file 
-fname <- 'designMat1_dmri_AgeSexScanSoft.txt'
+fname <- 'designMat01_dmri_AgeSexScanSoft.txt'
 # and it's full path to your fave output directory
 outfile <- paste0(outpath, '/', fname) 
 
@@ -61,7 +61,7 @@ makeDesign(nda_dmri_inc, outfile, time, contvar=contvar, catvar=catvar, delta=NU
 # Design Matrix 2 - t1w_inc sample, age + sex + scanner + software
 
 # Define the name of your design matrix file 
-fname <- 'designMat2_t1w_AgeSexScanSoft.txt'
+fname <- 'designMat02_t1w_AgeSexScanSoft.txt'
 # and it's full path to your fave output directory
 outfile <- paste0(outpath, '/', fname) 
 
@@ -94,7 +94,7 @@ makeDesign(nda_t1w_inc, outfile, time, contvar=contvar, catvar=catvar, delta=NUL
 # Design Matrix 3 - dmri_inc sample, age + sex + scanner + software + educ + income + PCs
 
 # Define the name of your design matrix file 
-fname <- 'designMat3_dmri_AgeSexScanSoftEducIncPcs.txt'
+fname <- 'designMat03_dmri_AgeSexScanSoftEducIncPcs.txt'
 # and it's full path to your fave output directory
 outfile <- paste0(outpath, '/', fname) 
 
@@ -127,7 +127,7 @@ makeDesign(nda_dmri_inc, outfile, time, contvar=contvar, catvar=catvar, delta=NU
 # Design Matrix 4 - t1w_inc sample, age + sex + scanner + software + educ + income + PCs
 
 # Define the name of your design matrix file 
-fname <- 'designMat4_t1w_AgeSexScanSoftEducIncPcs.txt'
+fname <- 'designMat04_t1w_AgeSexScanSoftEducIncPcs.txt'
 # and it's full path to your fave output directory
 outfile <- paste0(outpath, '/', fname) 
 
@@ -160,7 +160,7 @@ makeDesign(nda_t1w_inc, outfile, time, contvar=contvar, catvar=catvar, delta=NUL
 # Design Matrix 5 - t1w_inc sample, age + sex + scanner + software + mean cortical thickness
 
 # Define the name of your design matrix file 
-fname <- 'designMat5_t1w_AgeSexScanSoftThick.txt'
+fname <- 'designMat05_t1w_AgeSexScanSoftThick.txt'
 # and it's full path to your fave output directory
 outfile <- paste0(outpath, '/', fname) 
 
@@ -193,7 +193,7 @@ makeDesign(nda_t1w_inc, outfile, time, contvar=contvar, catvar=catvar, delta=NUL
 # Design Matrix 6 - t1w_inc sample, age + sex + scanner + software + total surface area
 
 # Define the name of your design matrix file 
-fname <- 'designMat6_t1w_AgeSexScanSoftArea.txt'
+fname <- 'designMat06_t1w_AgeSexScanSoftArea.txt'
 # and it's full path to your fave output directory
 outfile <- paste0(outpath, '/', fname) 
 
@@ -226,7 +226,7 @@ makeDesign(nda_t1w_inc, outfile, time, contvar=contvar, catvar=catvar, delta=NUL
 # Design Matrix 7 - t1w_inc sample, age + sex + scanner + software + intracranial volume
 
 # Define the name of your design matrix file 
-fname <- 'designMat7_t1w_AgeSexScanSoftIcv.txt'
+fname <- 'designMat07_t1w_AgeSexScanSoftIcv.txt'
 # and it's full path to your fave output directory
 outfile <- paste0(outpath, '/', fname) 
 
@@ -259,7 +259,7 @@ makeDesign(nda_t1w_inc, outfile, time, contvar=contvar, catvar=catvar, delta=NUL
 # Design Matrix 8 - t1w_inc sample, age + sex + scanner + software + educ + income + PCs + mean cortical thickness
 
 # Define the name of your design matrix file 
-fname <- 'designMat8_t1w_AgeSexScanSoftEducIncPcsThick.txt'
+fname <- 'designMat08_t1w_AgeSexScanSoftEducIncPcsThick.txt'
 # and it's full path to your fave output directory
 outfile <- paste0(outpath, '/', fname) 
 
@@ -292,7 +292,7 @@ makeDesign(nda_t1w_inc, outfile, time, contvar=contvar, catvar=catvar, delta=NUL
 # Design Matrix 9 - t1w_inc sample, age + sex + scanner + software + educ + income + PCs + total surface area
 
 # Define the name of your design matrix file 
-fname <- 'designMat9_t1w_AgeSexScanSoftEducIncPcsArea.txt'
+fname <- 'designMat09_t1w_AgeSexScanSoftEducIncPcsArea.txt'
 # and it's full path to your fave output directory
 outfile <- paste0(outpath, '/', fname) 
 
@@ -354,3 +354,35 @@ time <- c('baseline_year_1_arm_1', '2_year_follow_up_y_arm_1') # order matters! 
 # Now run makeDesign! 
 makeDesign(nda_t1w_inc, outfile, time, contvar=contvar, catvar=catvar, delta=NULL, interact=NULL, subjs=NULL, demean=TRUE, quadratic=NULL)
 
+###############################################################
+# Design Matrix 11 - dmri_inc sample, age + sex + scanner + software + gestational age
+
+# Define the name of your design matrix file 
+fname <- 'designMat11_dmri_AgeSexScanSoftGest.txt'
+# and it's full path to your fave output directory
+outfile <- paste0(outpath, '/', fname) 
+
+# makeDesign encodes continuous and categorical variables differently, therefore they are 
+# specified using different flags. Continuous variables are added using the "contvar" flag. 
+# Here we include age and the genetic PCs as continuous variables.
+contvar <- c('interview_age', 'gest_age')
+
+# Categorical variables are dummy coded and added using the "catvar" flag. makeDesign automatically
+# includes an intercept. For each categorical variable one category is defined as the reference category 
+# and that column is dropped. makeDesign also checks whether your matrix is rank deficient and if so
+# will automatically drop further categories to avoid this. Here we include sex, scanner info and 
+# SES demographics as categorical.
+catvar <- c('sex', 'mri_info_deviceserialnumber', 'mri_info_softwareversion')
+
+# The time points for which we wish to extract data are specified. You do not have to specify multiple 
+# time points, however if you do, specify them in chronoligical order ( this will be important for 
+# longitudinal modelling)
+time <- c('baseline_year_1_arm_1', '2_year_follow_up_y_arm_1') # order matters! start with baseline!
+
+# You can specify whether you wish to demean your continuous variables or not. the default is set to 
+# demean=TRUE. Other flags include "delta" for longitudinal modelling, "interact" to include interactions, 
+# "subjs" if you wish to filter by subject and "quadratic" if you wish to include a quadratic term 
+# (more details on these in the following sections). The defaults to these are set to null. 
+
+# Now run makeDesign! 
+makeDesign(nda_dmri_inc, outfile, time, contvar=contvar, catvar=catvar, delta=NULL, interact=NULL, subjs=NULL, demean=TRUE, quadratic=NULL)
