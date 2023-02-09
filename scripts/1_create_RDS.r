@@ -24,6 +24,9 @@ inpath <- '/space/amdale/1/tmp/ABCD_cache/abcd-sync/4.0/tabulated/released'
 # genetic PCs subject data
 pcfile <- '/space/amdale/1/tmp/ABCD_cache/abcd-sync/4.0/support_files/ABCD_rel4.0_unfiltered/ABCD_rel4.0_pcs_base_2yr.txt'
 
+# pregnancy ID data
+pregfile <- '/home/sabad/requests/pregnancy_ID_01172023.csv'
+
 # path to the output RDS file 
 outpath <- '/space/syn50/1/data/ABCD/d9smith/random_effects/data'
 fname <- 'nda4.0_offrel.RDS'
@@ -135,6 +138,23 @@ devhx$gest_age = ifelse(devhx$devhx_12a_p==0,40,ifelse(devhx$devhx_12a_p==1,40 -
 
 # Combine with the previously extracted variables
 outmat <- join(outmat, devhx, by='src_subject_id', match = "all")
+
+################################
+# Load the developmental history file
+preg <- read.delim(pregfile, sep=",")
+
+# get list of IDs for twins
+preg$twininc = 0
+preg[preg$pregnancyID %in% preg$pregnancyID[which(duplicated(preg$pregnancyID))],]$twininc = 1
+
+colnames(preg)[1] = 'src_subject_id'
+
+# Extract the variables of interest
+pregvar <- c('src_subject_id', 'twininc')
+preg <- preg[,pregvar]
+
+# Combine with the previously extracted variables
+outmat <- join(outmat, preg, by='src_subject_id', match = "all")
 
 ################################
 # Save the "outmat" as an RDS 
