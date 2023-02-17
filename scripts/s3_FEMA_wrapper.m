@@ -32,9 +32,10 @@ abcd_sync_path=cfg.data.abcd_sync;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Specify which imaging analyses to demo
-doVertexwiseSmri = 1; % run vertexwise smri analysis (datatype = 'vertex')
-doVertexwiseDmri = 1; % run vertexwise dmri analysis
-doVoxelwise = 1; % run voxelwise analysis (datatype = 'voxel')
+doVertexwiseSmri = 0; % run vertexwise smri analysis (datatype = 'vertex')
+doVertexwiseDmri = 0; % run vertexwise dmri analysis
+doVoxelwiseSmri = 1; % run voxelwise smri analysis (datatype = 'voxel')
+doVoxelwiseDmri = 0; % run voxelwise dmri analysis (datatype = 'voxel')
 doMOSTest = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -197,7 +198,7 @@ for r=1:length(RandomEffects)
       % sociodemographic information and genetic ancestry.  The results can be visualised using
       % `showVol_demo.m`
 
-      if doVoxelwise
+      if doVoxelwiseDmri
 
           datatype = 'voxel'; % imaging modality selected
           modality='dmri'; % concatenated imaging data stored in directories based on modality (smri, dmri, tfmri, roi)
@@ -218,6 +219,28 @@ for r=1:length(RandomEffects)
                 'ranknorm', ranknorm, 'contrasts', contrasts, 'RandomEffects', RandomEffects{r}, 'pihat_file', fname_pihat, 'nperms', nperms, 'mediation',mediation,'PermType',PermType,'tfce',tfce,'preg_file',fname_pregnancyID,'colsinterest',colsinterest);
           end    
       end
+
+      if doVoxelwiseSmri
+
+            datatype = 'voxel'; % imaging modality selected
+            modality='smri'; % concatenated imaging data stored in directories based on modality (smri, dmri, tfmri, roi)
+  
+            % uses path structure in abcd-sync to automatically find data
+            dirname_imaging = fullfile(abcd_sync_path, dataRelease, '/imaging_concat/voxelwise/', atlasVersion, modality); % filepath to imaging data
+            dirname_out = fullfile(outDir,dataRelease); % filepath to save FEMA output
+  
+            % modality = {'RNT' 'RNI' 'RND' 'RIF' 'RDF' 'HNT' 'HNI' 'HND' 'HIF' 'HDF' 'FNI' 'FA' 'MD' 'JA'};
+            modality = {'nu'}; % for running just one modality
+  
+            % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
+            for m=1:length(modality)
+                  fstem_imaging=modality{m};
+  
+                  % Run FEMA
+                  [fpaths_out beta_hat beta_se zmat logpmat sig2tvec sig2mat beta_hat_perm beta_se_perm zmat_perm sig2tvec_perm sig2mat_perm inputs mask tfce_perm analysis_params] = FEMA_wrapper(fstem_imaging, fname_design, dirname_out, dirname_tabulated, dirname_imaging, datatype,...
+                  'ranknorm', ranknorm, 'contrasts', contrasts, 'RandomEffects', RandomEffects{r}, 'pihat_file', fname_pihat, 'nperms', nperms, 'mediation',mediation,'PermType',PermType,'tfce',tfce,'preg_file',fname_pregnancyID,'colsinterest',colsinterest);
+            end    
+        end
 end
 
 diary off
