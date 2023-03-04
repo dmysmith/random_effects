@@ -6,7 +6,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Specify where to store results
-outpath = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-02-09';
+outpath = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-02-17';
 
 if ~exist(outpath, 'dir')
       mkdir(outpath)
@@ -35,7 +35,7 @@ abcd_sync_path=cfg.data.abcd_sync;
 doVertexwiseSmri = 0; % run vertexwise smri analysis (datatype = 'vertex')
 doVertexwiseDmri = 0; % run vertexwise dmri analysis
 doVoxelwiseSmri = 1; % run voxelwise smri analysis (datatype = 'voxel')
-doVoxelwiseDmri = 0; % run voxelwise dmri analysis (datatype = 'voxel')
+doVoxelwiseDmri = 1; % run voxelwise dmri analysis (datatype = 'voxel')
 doMOSTest = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -192,11 +192,7 @@ for r=1:length(RandomEffects)
       end
 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      %% DEMO VOXELWISE ANALYSES
-
-      % This demo produces voxelwise age associations with restricted normalised isotropic (RNI) diffusio controlling for 
-      % sociodemographic information and genetic ancestry.  The results can be visualised using
-      % `showVol_demo.m`
+      %% VOXELWISE ANALYSES
 
       if doVoxelwiseDmri
 
@@ -207,8 +203,8 @@ for r=1:length(RandomEffects)
           dirname_imaging = fullfile(abcd_sync_path, dataRelease, '/imaging_concat/voxelwise/', atlasVersion, modality); % filepath to imaging data
           dirname_out = fullfile(outDir,dataRelease); % filepath to save FEMA output
 
-          % modality = {'RNT' 'RNI' 'RND' 'RIF' 'RDF' 'HNT' 'HNI' 'HND' 'HIF' 'HDF' 'FNI' 'FA' 'MD' 'JA'};
-          modality = {'RNI' 'RND' 'FNI'}; % for running just one modality
+          modality = {'RNT' 'RNI' 'RND' 'RIF' 'RDF' 'HNT' 'HNI' 'HND' 'HIF' 'HDF' 'FNI' 'FA' 'MD' 'JA'};
+          % modality = {'RNI' 'RND' 'FNI'}; % for running just one modality
 
           % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
           for m=1:length(modality)
@@ -235,6 +231,7 @@ for r=1:length(RandomEffects)
             % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
             for m=1:length(modality)
                   fstem_imaging=modality{m};
+                  keyboard;
   
                   % Run FEMA
                   [fpaths_out beta_hat beta_se zmat logpmat sig2tvec sig2mat beta_hat_perm beta_se_perm zmat_perm sig2tvec_perm sig2mat_perm inputs mask tfce_perm analysis_params] = FEMA_wrapper(fstem_imaging, fname_design, dirname_out, dirname_tabulated, dirname_imaging, datatype,...

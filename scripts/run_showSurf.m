@@ -27,22 +27,30 @@
 % ADD ALL ABCD CMIG tools directories to MATLAB path:
 
 % e.g. if cloned into ~/github: 
-% addpath(genpath('~/github/cmig_utils'))
+addpath(genpath('~/github/cmig_tools_internal'))
 % addpath(genpath('~/github/showSurf'))
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% VISULATION OF VERTEXWISE FEMA OUTPUT USING 'showSurf'
 
 % Inputs to showsurf_ds 
-dirname_out = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-01-30/designMat2_t1w_AgeSexScanSoft/FATSE';
-pheno_list = {'area_ic5_sm1000' 'thickness_ic5_sm1000' 'sulc_ic5_sm1000'};
+dirname_out = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-02-09/designMat01_dmri_AgeSexScanSoft/FATSE';
+modality = 'dmri'; % dmri or smri
 dataRelease = '4.0'; % ABCD data release
 ico = 5; % ico number
-ncoeff = 1:5;
 RandomEffects = {'F' 'A' 'T' 'S' 'E'};
-savepath = '/home/d9smith/tmp/2023-02-01';
+rgb = {'A' 'FT' 'S'};
+savepath = '/home/d9smith/tmp/2023-02-13';
+
+if modality == 'smri'
+    pheno_list = {'area_ic5_sm1000' 'thickness_ic5_sm1000' 'sulc_ic5_sm1000'};
+    
+elseif modality == 'dmri'
+    pheno_list = {'FA-gm' 'FA-wm' 'FNI-gm' 'FNI-wm' 'HNT-gm' 'HNT-wm' 'LD-gm' 'LD-wm' 'MD-gm' 'MD-wm' 'RND-gm' 'RND-wm' 'RNI-gm' 'RNI-wm' 'RNT-gm' 'RNT-wm' 'TD-gm' 'TD-wm'}; % name of imaging phenotype - data already saved as ico=5
+    pheno_list = strcat(pheno_list, '_ic5_sm1000'); % add '_ic5_sm1000'
+end
 
 for i=1:length(pheno_list)
     fstem_imaging = pheno_list{i};
-    showsurf_randomeffects(dirname_out, fstem_imaging, dataRelease, ico, RandomEffects, savepath);
+    showsurf_randomeffects(dirname_out, fstem_imaging, dataRelease, ico, RandomEffects, savepath, rgb);
 end
