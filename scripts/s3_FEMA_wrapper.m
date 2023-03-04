@@ -6,7 +6,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Specify where to store results
-outpath = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-02-17';
+outpath = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-03-03';
 
 if ~exist(outpath, 'dir')
       mkdir(outpath)
@@ -32,10 +32,10 @@ abcd_sync_path=cfg.data.abcd_sync;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Specify which imaging analyses to demo
-doVertexwiseSmri = 0; % run vertexwise smri analysis (datatype = 'vertex')
+doVertexwiseSmri = 1; % run vertexwise smri analysis (datatype = 'vertex')
 doVertexwiseDmri = 0; % run vertexwise dmri analysis
-doVoxelwiseSmri = 1; % run voxelwise smri analysis (datatype = 'voxel')
-doVoxelwiseDmri = 1; % run voxelwise dmri analysis (datatype = 'voxel')
+doVoxelwiseSmri = 0; % run voxelwise smri analysis (datatype = 'voxel')
+doVoxelwiseDmri = 0; % run voxelwise dmri analysis (datatype = 'voxel')
 doMOSTest = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -66,6 +66,11 @@ nperms = 0; % Number of permutations - if wanting to use resampling methods nper
 mediation = 0; % If wanting to use outputs for a mediation analysis set mediation=1 - ensures same resampling scheme used for each model in fname_design
 PermType = 'wildbootstrap'; %Default resampling method is null wild-bootstrap - to run mediation analysis need to use non-null wild-bootstrap ('wildboostrap-nn')
 tfce = 0; % If wanting to run threshold free cluster enhancement (TFCE) set tfce=1 (default = 0)
+RandomEstType = 'ML'; % specify random effects estimator (default is MoM)
+Hessflag=0;
+logLikflag=0;
+ciflag=0;
+
 colsinterest=[1]; % Only used if nperms>0. Indicates which IVs (columns of X) the permuted null distribution and TFCE statistics will be saved for (default 1, i.e. column 1)
 niter=0; % decrease number of iterations -- change when you want to run for real!
 
@@ -153,20 +158,22 @@ for r=1:length(RandomEffects)
                       fstems = 'thickness-sm256'; % name of imaging phenotype
                       %fstem_imaging = 'sulc-sm256';
                 case '4.0'
-                      fstems ={'area_ic5_sm1000' 'sulc_ic5_sm1000' 'thickness_ic5_sm1000'}; % name of imaging phenotype - data already saved as ico=5
+                      % fstems ={'area_ic5_sm1000' 'sulc_ic5_sm1000' 'thickness_ic5_sm1000'}; % name of imaging phenotype - data already saved as ico=5
+                      fstems = {'area_ic5_sm1000'};
 
           end
 
-          ico = 5; % icosahedral number
+          ico = 3; % icosahedral number
 
           % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
 
           for m=1:length(fstems)
                 fstem_imaging = fstems{m};
-                % RUN FEMA
+                keyboard;
                 % RUN FEMA
                 [fpaths_out beta_hat beta_se zmat logpmat sig2tvec sig2mat beta_hat_perm beta_se_perm zmat_perm sig2tvec_perm sig2mat_perm inputs mask tfce_perm analysis_params] = FEMA_wrapper(fstem_imaging, fname_design, dirname_out, dirname_tabulated, dirname_imaging, datatype,...
-                'ico', ico, 'ranknorm', ranknorm, 'contrasts', contrasts, 'RandomEffects', RandomEffects{r}, 'pihat_file', fname_pihat, 'nperms', nperms, 'mediation',mediation,'PermType',PermType,'tfce',tfce,'preg_file',fname_pregnancyID,'colsinterest',colsinterest);
+                'ico', ico, 'ranknorm', ranknorm, 'contrasts', contrasts, 'RandomEffects', RandomEffects{r}, 'pihat_file', fname_pihat, 'nperms', nperms, 'mediation',mediation,'PermType',PermType,'tfce',tfce,'preg_file',fname_pregnancyID,'colsinterest',colsinterest,...
+                'Hessflag',Hessflag,'ciflag',ciflag,'logLikflag',logLikflag,'RandomEstType',RandomEstType);
           end
 
           %%
