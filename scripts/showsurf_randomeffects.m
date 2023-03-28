@@ -43,11 +43,15 @@ ncoeff=1:length(RandomEffects);
 % specify limits for plot based on vertvals
 fmax = 1; % max limit for colorbar
 fmin = 0; % min limit of colorbar
-fmid = fmax/2; % middle of colorbar
+fmid = 0.5; % middle of colorbar
 fvals = [fmin fmid fmax];
 clim = [fmin fmax]; % set colorbar limits
 
-cm = hot; % set colormap
+% cm = hot; % set colormap
+% cm = blueblackred(); % set colormap
+% cm = cm(51:end,:);
+
+cm = fire;
 
 curvcontrast = [0.2 0.2]; % contrast of gyri/sulci
 
@@ -73,10 +77,10 @@ if exist('rgb')
     
     % subplot(2,2,1); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'left', [1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},[],curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
 
-    subplot(2,2,1); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'left', [1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},[],curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
-    subplot(2,2,2); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'right',[0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},[],curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
-    subplot(2,2,3); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'right',[1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},[],curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
-    subplot(2,2,4); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'left', [0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},[],curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+    subplot(2,2,1); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'left', [1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+    subplot(2,2,2); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'right',[0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+    subplot(2,2,3); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'right',[1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+    subplot(2,2,4); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'left', [0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
     titleAx = axes;
     set(titleAx,'position',[0 0 1 1],'units','normalized');axis off;
     %text(titleAx, 0.5,1,sprintf('%s ~ %s [%s]', fstem_imaging, colnames_model{coeffnum}, statname),'color','w','fontweight','bold','interpreter','none','verticalalignment','top','horizontalalignment','center','fontsize',14)
@@ -100,10 +104,10 @@ else
 
           fh = figure(coeffnum + 100*(str2num(dataRelease(1))-3)); clf; % number matlab figure window
           set(fh,'Color',bgcol); fh.InvertHardcopy = 'off';
-          subplot(2,2,1); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'left', [1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},[],curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
-          subplot(2,2,2); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'right',[0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},[],curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
-          subplot(2,2,3); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'right',[1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},[],curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
-          subplot(2,2,4); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'left', [0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},[],curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+          subplot(2,2,1); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'left', [1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+          subplot(2,2,2); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'right',[0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+          subplot(2,2,3); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'right',[1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+          subplot(2,2,4); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'left', [0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
           titleAx = axes;
           set(titleAx,'position',[0 0 1 1],'units','normalized');axis off;
           %text(titleAx, 0.5,1,sprintf('%s ~ %s [%s]', fstem_imaging, colnames_model{coeffnum}, statname),'color','w','fontweight','bold','interpreter','none','verticalalignment','top','horizontalalignment','center','fontsize',14)

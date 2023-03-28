@@ -49,8 +49,12 @@ fname_pihat = fullfile('/space/amdale/1/tmp/ABCD_cache/abcd-sync/4.0/genomics/AB
 %To run multiple deisgn matrices with same imaging data populate each row with path to each design matrix
 designmat_dir = '/space/syn50/1/data/ABCD/d9smith/random_effects/designMat';
 designmat_file = dir(sprintf('%s/designMat*.txt', designmat_dir));
-designmat_file = {designmat_file.name}';
-fname_design = strcat(designmat_dir, '/', designmat_file);
+% designmat_file = {designmat_file.name}';
+% fname_design = strcat(designmat_dir, '/', designmat_file);
+
+% only running one design mat at a time
+fname_design = '/space/syn50/1/data/ABCD/d9smith/random_effects/designMat/designMat02_t1w_AgeSexScanSoft.txt';
+designmat_file = 'designMat02_t1w_AgeSexScanSoft.txt';
 
 outdir_file = strrep(designmat_file, '.txt', '');
 outdir_path=strcat(outpath,'/',outdir_file);
@@ -159,7 +163,7 @@ for r=1:length(RandomEffects)
                       %fstem_imaging = 'sulc-sm256';
                 case '4.0'
                       % fstems ={'area_ic5_sm1000' 'sulc_ic5_sm1000' 'thickness_ic5_sm1000'}; % name of imaging phenotype - data already saved as ico=5
-                      fstems = {'area_ic5_sm1000'};
+                      fstems = {'thickness_ic5_sm1000' 'area_ic5_sm1000' 'sulc_ic5_sm1000'};
 
           end
 
@@ -169,7 +173,7 @@ for r=1:length(RandomEffects)
 
           for m=1:length(fstems)
                 fstem_imaging = fstems{m};
-                keyboard;
+                
                 % RUN FEMA
                 [fpaths_out beta_hat beta_se zmat logpmat sig2tvec sig2mat beta_hat_perm beta_se_perm zmat_perm sig2tvec_perm sig2mat_perm inputs mask tfce_perm analysis_params] = FEMA_wrapper(fstem_imaging, fname_design, dirname_out, dirname_tabulated, dirname_imaging, datatype,...
                 'ico', ico, 'ranknorm', ranknorm, 'contrasts', contrasts, 'RandomEffects', RandomEffects{r}, 'pihat_file', fname_pihat, 'nperms', nperms, 'mediation',mediation,'PermType',PermType,'tfce',tfce,'preg_file',fname_pregnancyID,'colsinterest',colsinterest,...

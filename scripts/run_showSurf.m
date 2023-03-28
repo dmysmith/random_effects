@@ -34,13 +34,14 @@ addpath(genpath('~/github/cmig_tools_internal'))
 %% VISULATION OF VERTEXWISE FEMA OUTPUT USING 'showSurf'
 
 % Inputs to showsurf_ds 
-dirname_out = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-02-09/designMat01_dmri_AgeSexScanSoft/FATSE';
-modality = 'dmri'; % dmri or smri
+dirname_out = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-03-03/designMat02_t1w_AgeSexScanSoft/FATSE';
+% dirname_out = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-02-17/designMat02_t1w_AgeSexScanSoft/FATSE';
+modality = 'smri'; % dmri or smri
 dataRelease = '4.0'; % ABCD data release
-ico = 5; % ico number
+ico = 3; % ico number
 RandomEffects = {'F' 'A' 'T' 'S' 'E'};
 rgb = {'A' 'FT' 'S'};
-savepath = '/home/d9smith/tmp/2023-02-13';
+savepath = '/home/d9smith/tmp/2023-03-03_fire';
 
 if modality == 'smri'
     pheno_list = {'area_ic5_sm1000' 'thickness_ic5_sm1000' 'sulc_ic5_sm1000'};
@@ -50,7 +51,15 @@ elseif modality == 'dmri'
     pheno_list = strcat(pheno_list, '_ic5_sm1000'); % add '_ic5_sm1000'
 end
 
+% create plots for individual random effects
+for i=1:length(pheno_list)
+    fstem_imaging = pheno_list{i};
+    showsurf_randomeffects(dirname_out, fstem_imaging, dataRelease, ico, RandomEffects, savepath);
+end
+
+% create plots for RGB values
 for i=1:length(pheno_list)
     fstem_imaging = pheno_list{i};
     showsurf_randomeffects(dirname_out, fstem_imaging, dataRelease, ico, RandomEffects, savepath, rgb);
 end
+
