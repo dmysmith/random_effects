@@ -1,4 +1,4 @@
-function [fh] = showsurf_randomeffects(dirname_out, fstem_imaging, dataRelease, ico, RandomEffects, savepath, rgb)
+function [fh] = showsurf_randomeffects(dirname_out, fstem_imaging, dataRelease, ico, RandomEffects, savepath, varargin)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% REQUIREMENTS TO RUN showSurf.m
@@ -23,6 +23,19 @@ function [fh] = showsurf_randomeffects(dirname_out, fstem_imaging, dataRelease, 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% VISULATION OF VERTEXWISE FEMA RANDOM EFFECTS USING 'showSurf'
+
+inputs = inputParser;
+addParamValue(inputs, 'rgb', []);
+addParamValue(inputs, 'legendPosition', 0);
+addParamValue(inputs, 'title', 0)
+addParamValue(inputs, 'polarity', 2)
+addParamValue(inputs, 'colorbar', []);
+
+parse(inputs, varargin{:});
+legendPosition = inputs.Results.legendPosition;
+title = inputs.Results.title;
+rgb = inputs.Results.rgb;
+polarity = inputs.Results.polarity;
 
 fname_results = sprintf('%s/FEMA_wrapper_output_vertex_%s.mat',dirname_out,fstem_imaging); % FEMA output filename
 load(fname_results); % load FEMA output
@@ -57,7 +70,34 @@ curvcontrast = [0.2 0.2]; % contrast of gyri/sulci
 
 bgcol = [0 0 0]; % change to [1 1 1] for white background
 
-if exist('rgb')
+fh = figure('Units', 'centimeters', 'Position', [10 10 16 10], 'Color', bgcol, 'InvertHardcopy', 'off');
+
+% Define spacing for axes
+% hvgap controls the horizontal and vertical spaces between the axes
+% btgap controls the space from the bottom of the figure and the top
+% of the figure respectively
+% lrgap controls the space from the left of the figure and the right
+% of the figure respectively
+hvgap = [0.02 0.02];
+if strcmpi(legendPosition, 'south')
+  lrgap = [0.02 0.02];
+  if title
+      btgap = [0.12 0.08];
+  else
+      btgap = [0.12 0.01];
+  end
+else
+  if strcmpi(legendPosition, 'east')
+      lrgap = [0.02 0.138];
+      if title
+          btgap = [0.018 0.08];
+      else
+          btgap = [0.018 0.018];
+      end
+  end
+end
+
+if ~isempty(rgb)
     assert(length(rgb)==3,'Argument rgb must have length 3.');
     
     redi = find(ismember(RandomEffects, rgb{1}(:)));
@@ -71,16 +111,17 @@ if exist('rgb')
     rgbvals = cat(1, redvals, grnvals, bluvals);
     rgbvals_lh = rgbvals(:,1:icnvert,:); % divide statistics by hemisphere for plotting
     rgbvals_rh = rgbvals(:,icnvert+[1:icnvert],:);
-    
-    fh = figure; clf; % number matlab figure window
-    set(fh,'Color',bgcol); fh.InvertHardcopy = 'off';
-    
-    % subplot(2,2,1); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'left', [1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},[],curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
 
-    subplot(2,2,1); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'left', [1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
-    subplot(2,2,2); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'right',[0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
-    subplot(2,2,3); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'right',[1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
-    subplot(2,2,4); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'left', [0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+    btgap = [0.02 0.02];
+    
+    allH = tight_subplot(2, 2, hvgap, btgap, lrgap);
+    hold(allH(:), 'on');
+      
+    axes(allH(1)); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'left', [1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},polarity,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+    axes(allH(2)); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'right',[0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},polarity,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+    axes(allH(3)); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'right',[1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},polarity,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+    axes(allH(4)); SurfView_show_new(surf_lh_pial,surf_rh_pial,rgbvals_lh,rgbvals_rh,fvals,cm,'left', [0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},polarity,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+ 
     titleAx = axes;
     set(titleAx,'position',[0 0 1 1],'units','normalized');axis off;
     %text(titleAx, 0.5,1,sprintf('%s ~ %s [%s]', fstem_imaging, colnames_model{coeffnum}, statname),'color','w','fontweight','bold','interpreter','none','verticalalignment','top','horizontalalignment','center','fontsize',14)
@@ -102,24 +143,62 @@ else
 
 
 
-          fh = figure(coeffnum + 100*(str2num(dataRelease(1))-3)); clf; % number matlab figure window
-          set(fh,'Color',bgcol); fh.InvertHardcopy = 'off';
-          subplot(2,2,1); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'left', [1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
-          subplot(2,2,2); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'right',[0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
-          subplot(2,2,3); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'right',[1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
-          subplot(2,2,4); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'left', [0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},1,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
-          titleAx = axes;
-          set(titleAx,'position',[0 0 1 1],'units','normalized');axis off;
-          %text(titleAx, 0.5,1,sprintf('%s ~ %s [%s]', fstem_imaging, colnames_model{coeffnum}, statname),'color','w','fontweight','bold','interpreter','none','verticalalignment','top','horizontalalignment','center','fontsize',14)
+          allH = tight_subplot(4, 1, hvgap, btgap, lrgap);
+          hold(allH(:), 'on');
+    
+          axes(allH(1)); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'left', [1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},polarity,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+          axes(allH(2)); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'right',[1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},polarity,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+          axes(allH(3)); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'right',[0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},polarity,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+          % axes(allH(3)); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'right',[1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},polarity,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+          axes(allH(4)); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'left', [0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},polarity,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
+          
+          if(title)
+              titleAx = axes;
+              set(titleAx,'position',[0 0 1 1],'units','normalized');axis off;
+              text(titleAx, 0.5,1,sprintf('%s ~ %s [%s]', fstem_imaging, colnames_model{coeffnum}, statname),'color','w','fontweight','bold','interpreter','none','verticalalignment','top','horizontalalignment','center','fontsize',14)
+          end
+          
+          if ~isempty(colorbar)
+              % Set colorbar
+    
+              colormap(cm);
+              cb                    = colorbar('color', 'w');
+              cb.FontSize           = 10;
+              % cb.Label.String       = strcat('z-score');
+              cb.Label.FontSize     = 12;
+              cb.Label.FontWeight   = 'bold';   
+              cb.Box                = 'off';
+        
+              if strcmpi(legendPosition, 'south')
+                  cb.Location = 'south';
+                  if title
+                      cb.Position(1)      = allH(1).Position(1);
+                      cb.Position(2)      = cb.Position(2) - hvgap(1);
+                      cb.Position(3)      = allH(1).Position(3)*2 + hvgap(1);
+                  else
+                      cb.Position(1)      = allH(1).Position(1);
+                      cb.Position(2)      = cb.Position(2) - btgap(1);
+                      cb.Position(3)      = allH(1).Position(3)*2 + hvgap(1);
+                  end
+              else
+                  if strcmpi(legendPosition, 'east')
 
-          % Set colorbar
-          colormap(cm);
-          cb = colorbar('color', 'w');
-          % cb.Label.Interpreter = 'latex';
-          cb.Label.String = strcat('sig2mat');
-          cb.Label.FontSize = 10;
-          cb.Box = 'off';
-          cb.Position = [.92 .08 .02 .8150];
+                      cb.Location = 'westoutside';
+                      if title
+                          cb.Position(1)      = allH(4).Position(1) + allH(4).Position(3) + 0.01;
+                          cb.Position(2)      = allH(3).Position(2);
+                          cb.Position(4)      = allH(1).Position(4)*2 + hvgap(1);
+                      else                          
+                          
+                          cb.Position(1)      = allH(4).Position(1) + 0.16;
+                          cb.Position(2)      = allH(4).Position(2) + hvgap(1);
+                          cb.Position(4)      = allH(1).Position(4)*4;% + hvgap(1);
+                          
+                      end
+                  end
+              end
+          end
+
           caxis(clim);
 
           % save
