@@ -41,14 +41,15 @@ dataRelease = '4.0'; % ABCD data release
 ico = 3; % ico number
 RandomEffects = {'F' 'A' 'S' 'E'};
 rgb = {'A' 'F' 'S'};
-savepath = '/home/d9smith/projects/random_effects/plots/results_2023-03-03/FASE/horiz';
+savepath = '/home/d9smith/projects/random_effects/plots/results_2023-03-03/FASE';
 
 % Specify visual preferences for plotting
 legendPosition = 'East'; % 'South' or 'East'
 title = 1; % whether to include title at top of plot
 polarity = 1;
-curvcontrast = [0.2 0.2]; % contrast of gyri/sulci
-bgcol = [0 0 0];
+
+fname_results = sprintf('%s/FEMA_wrapper_output_vertex_%s.mat',dirname_out,fstem_imaging); % FEMA output filename
+load(fname_results); % load FEMA output
 
 if modality == 'smri'
     pheno_list = {'area_ic5_sm1000' 'thickness_ic5_sm1000' 'sulc_ic5_sm1000'};
@@ -70,7 +71,7 @@ for i=1:length(pheno_list)
 
     % plot total residual variance
     statname = 'total residual variance';
-    vertvals = sig2tvec; % specify statistics to plot
+    vertvals = zmat(coeffnum,:); % specify statistics to plot
     vertvals_lh = vertvals(1:icnvert); % divide statistics by hemisphere for plotting
     vertvals_rh = vertvals(icnvert+[1:icnvert]);
     
@@ -81,64 +82,81 @@ for i=1:length(pheno_list)
     fvals = [fmin fmid fmax]; % this will be passed to the SurfView_show_new function
     
     % set colorbar limits - usually [fmin fmax] or [-fmax fmax]
-    clim = [fmin fmax]; 
+    clim = [-fmax fmax]; 
     
     % Create figure
-    fh = figure('Units', 'centimeters', 'Position', [10 10 16 3], 'Color', bgcol, 'InvertHardcopy', 'off');
+    fh = figure('Units', 'centimeters', 'Position', [10 10 16 10], 'Color', bgcol, 'InvertHardcopy', 'off');
     
     % Define spacing for axes
     hvgap = [0.02 0.02];
     if strcmpi(legendPosition, 'south')
-        lrgap = [0.02 0.02];
-        btgap = [0.12 0.01];
+    lrgap = [0.02 0.02];
+    if title
+      btgap = [0.12 0.08];
     else
-        if strcmpi(legendPosition, 'east')
-          % lrgap = [0.02 0.138];
-          lrgap = [0.02 0.17];
+      btgap = [0.12 0.01];
+    end
+    else
+    if strcmpi(legendPosition, 'east')
+      lrgap = [0.02 0.138];
+      if title
+          btgap = [0.018 0.08];
+      else
           btgap = [0.018 0.018];
-        end
+      end
+    end
     end
     
     % Create axes
-    allH = tight_subplot(1, 4, hvgap, btgap, lrgap);
+    allH = tight_subplot(2, 2, hvgap, btgap, lrgap);
     hold(allH(:), 'on');
-
-    cm = fire;
     
     axes(allH(1)); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'left', [1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},polarity,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
     axes(allH(2)); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'right',[0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},polarity,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
     axes(allH(3)); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'right',[1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},polarity,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
     axes(allH(4)); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'left', [0 1],curvvec_lh,curvvec_rh,icsurfs{icnum},polarity,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
     
+    if(title)
+    titleAx = axes;
+    set(titleAx,'position',[0 0 1 1],'units','normalized');axis off;
+    text(titleAx, 0.5,1,sprintf('%s ~ %s [%s]', fstem_imaging, colnames_model{coeffnum}, statname),'color','w','fontweight','bold','interpreter','none','verticalalignment','top','horizontalalignment','center','fontsize',14)
+    end
     
     % Set colorbar
     colormap(cm);
     cb                    = colorbar('color', 'w');
     cb.FontSize           = 10;
-    cb.Label.Interpreter  = 'latex';
-    cb.Label.String       = '$\sigma^2_{total}$';
+    cb.Label.String       = strcat('z-score');
     cb.Label.FontSize     = 12;
     cb.Label.FontWeight   = 'bold';   
     cb.Box                = 'off';
     
     if strcmpi(legendPosition, 'south')
-        cb.Location = 'south';
-        cb.Position(1)      = allH(1).Position(1);
-        cb.Position(2)      = cb.Position(2) - btgap(1);
+    cb.Location = 'south';
+    if title
+      cb.Position(1)      = allH(1).Position(1);
+      cb.Position(2)      = cb.Position(2) - hvgap(1);
+      cb.Position(3)      = allH(1).Position(3)*2 + hvgap(1);
     else
-        if strcmpi(legendPosition, 'east')
-          cb.Location = 'eastoutside';
+      cb.Position(1)      = allH(1).Position(1);
+      cb.Position(2)      = cb.Position(2) - btgap(1);
+      cb.Position(3)      = allH(1).Position(3)*2 + hvgap(1);
+    end
+    else
+    if strcmpi(legendPosition, 'east')
+      cb.Location = 'eastoutside';
+      if title
+          cb.Position(1)      = allH(4).Position(1) + allH(4).Position(3) + 0.01;
+          cb.Position(2)      = allH(3).Position(2);
+          cb.Position(4)      = allH(1).Position(4)*2 + hvgap(1);
+      else
           cb.Position(1)      = allH(4).Position(1) + allH(4).Position(3) + 0.16;
-          cb.Position(2)      = allH(3).Position(2) + .035;
-          % cb.Position(4)      = allH(1).Position(4)*2 + hvgap(1);
-          cb.Position(4)      = allH(1).Position(4) - .05;
-        end
+          cb.Position(2)      = allH(3).Position(2);
+          cb.Position(4)      = allH(1).Position(4)*2 + hvgap(1);
+      end
+    end
     end
     caxis(clim);
-
-    % save
-    if ~exist(savepath,'dir'), mkdir(savepath); end
-    saveas(fh, sprintf('%s/%s_%s_%s.png',savepath, fstem_imaging, strrep(dirname_out(68:end),'/','_'),'sig2tvec'));
 
     % create plots for individual random effects
     fh = showsurf_randomeffects(dirname_out, fstem_imaging, dataRelease, ico, RandomEffects, savepath, 'legendPosition', legendPosition, 'polarity', polarity);

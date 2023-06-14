@@ -53,8 +53,8 @@
 
 % 1) Specify where FEMA_wrapper output is saved and load into MATLAB workspace
 
-dirname_out='/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-01-30/designMat1_dmri_AgeSexScanSoft/FATSE/4.0'; % directory of where FEMA output saved
-fstem_imaging='RNI'; %imaging phenotype used for analysis
+dirname_out='/space/syn50/1/data/ABCD/d9smith/random_effects/test_t2/designMat02_t1w_AgeSexScanSoft/FASE/4.0'; % directory of where FEMA output saved
+fstem_imaging='T2'; %imaging phenotype used for analysis
 % fname_results = sprintf('%s/FEMA_wrapper_output_voxel_%s.mat',dirname_out,fstem_imaging);
 % %load(fname_results,'vol_beta_hat','vol_z','colnames_model'); % load FEMA output - only need some variables
 % load(fname_results)
@@ -62,7 +62,7 @@ fstem_imaging='RNI'; %imaging phenotype used for analysis
 % 2) Specify ABCD release version as the atlas used for voxelwise registration is different from 3.0 to 4.0
 
 dataRelease='4.0';
-RandomEffects = {'F' 'A' 'T' 'S' 'E'};
+RandomEffects = {'F' 'A' 'S' 'E'};
 
 % call showvol_randomeffects
 showvol_randomeffects(dirname_out, fstem_imaging, dataRelease, RandomEffects);

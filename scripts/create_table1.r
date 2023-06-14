@@ -7,28 +7,31 @@
 library(tableone)
 library(plyr)
 
-designmat_file = "/space/syn50/1/data/ABCD/d9smith/random_effects/imaging/designMat/designMat1_allcovs.txt"
+obs_file = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-03-03/designMat02_t1w_AgeSexScanSoft/FASE/obs.txt'
+nda_file = '/space/syn50/1/data/ABCD/d9smith/random_effects/data/nda4.0_offrel.RDS'
 
-vxl_idfile = "/space/syn50/1/data/ABCD/d9smith/random_effects/imaging/vxl_id_list.txt"
+outfile = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-03-03/table1.csv' 
 
-designmat = read.table(designmat_file, sep = "\t", header = TRUE)
+obs = read.table(obs_file, sep = ",", header = TRUE)
+colnames(obs) = c("src_subject_id","eventname")
+nda = readRDS(nda_file)
 
-table(designmat$eventname)
+df <- join(obs, nda, by = c("src_subject_id","eventname"))
+
+table(df$eventname)
 
 # vertexwise data
-myvars = c("age", "interview_age", 
-"sexM", "high.educHS.Diploma.GED", "high.educSome.College", 
-"high.educBachelor", "high.educPost.Graduate.Degree", "hispYes", 
-"household.income...50K....100K.", "household.income...100K.")
+myvars = c("interview_age", 
+"sex", "household.income","high.educ","married","race.4level", 
+"race.6level","hisp")
 
-catvars = c("sexM", "high.educHS.Diploma.GED", "high.educSome.College", 
-"high.educBachelor", "high.educPost.Graduate.Degree", "hispYes", 
-"household.income...50K....100K.", "household.income...100K.")
+catvars = c("sex", "household.income","high.educ","married","race.4level", 
+"race.6level","hisp")
 
-CreateTableOne(data = designmat, vars = myvars, factorVars = catvars, strata = "eventname")
+table <- CreateTableOne(data = df, vars = myvars, factorVars = catvars, strata = "eventname")
 
-vxl_ids = read.table(vxl_idfile, sep = ",", header = TRUE)
-names(vxl_ids) = c("eventname","src_subject_id")
-designmat_vxl = join(vxl_ids, designmat)
+## Then prepare table for export
+table_p <- print(table, quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
 
-CreateTableOne(data = designmat_vxl, vars = myvars, factorVars = catvars, strata = "eventname")
+## Save to a CSV file
+write.csv(table_p, file = outfile)

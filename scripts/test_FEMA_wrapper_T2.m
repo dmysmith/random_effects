@@ -6,7 +6,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Specify where to store results
-outpath = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-03-03';
+outpath = '/space/syn50/1/data/ABCD/d9smith/random_effects/test_t2';
 
 if ~exist(outpath, 'dir')
       mkdir(outpath)
@@ -32,9 +32,9 @@ abcd_sync_path=cfg.data.abcd_sync;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Specify which imaging analyses to demo
-doVertexwiseSmri = 1; % run vertexwise smri analysis (datatype = 'vertex')
+doVertexwiseSmri = 0; % run vertexwise smri analysis (datatype = 'vertex')
 doVertexwiseDmri = 0; % run vertexwise dmri analysis
-doVoxelwiseSmri = 0; % run voxelwise smri analysis (datatype = 'voxel')
+doVoxelwiseSmri = 1; % run voxelwise smri analysis (datatype = 'voxel')
 doVoxelwiseDmri = 0; % run voxelwise dmri analysis (datatype = 'voxel')
 doMOSTest = 0;
 
@@ -70,7 +70,7 @@ nperms = 0; % Number of permutations - if wanting to use resampling methods nper
 mediation = 0; % If wanting to use outputs for a mediation analysis set mediation=1 - ensures same resampling scheme used for each model in fname_design
 PermType = 'wildbootstrap'; %Default resampling method is null wild-bootstrap - to run mediation analysis need to use non-null wild-bootstrap ('wildboostrap-nn')
 tfce = 0; % If wanting to run threshold free cluster enhancement (TFCE) set tfce=1 (default = 0)
-RandomEstType = 'ML'; % specify random effects estimator (default is MoM)
+RandomEstType = 'MoM'; % specify random effects estimator (default is MoM)
 Hessflag=0;
 logLikflag=0;
 ciflag=0;
@@ -81,11 +81,10 @@ niter=0; % decrease number of iterations -- change when you want to run for real
 fname_pregnancyID = fullfile('/home/sabad/requests/pregnancy_ID_01172023.csv');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 1: F, A, T, S, E
 
 % specify random effects - updating to accept a cell array
-% RandomEffects = {{'F','A','T','S','E'}};
-RandomEffects = {{'F','A','T','S','E'}; {'F','A','S','E'}};
+RandomEffects = {{'F','A','S','E'}};
+% RandomEffects = {{'F','A','T','S','E'}; {'F','A','S','E'}};
 
 for r=1:length(RandomEffects)
 
@@ -237,7 +236,7 @@ for r=1:length(RandomEffects)
             dirname_out = fullfile(outDir,dataRelease); % filepath to save FEMA output
   
             % modality = {'RNT' 'RNI' 'RND' 'RIF' 'RDF' 'HNT' 'HNI' 'HND' 'HIF' 'HDF' 'FNI' 'FA' 'MD' 'JA'};
-            modality = {'nu'}; % for running just one modality
+            modality = {'T2'}; % for running just one modality
   
             % Once all filepaths and inputs have been specified FEMA_wrapper.m can be run in one line
             for m=1:length(modality)
