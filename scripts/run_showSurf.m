@@ -44,7 +44,7 @@ rgb = {'A' 'F' 'S'};
 savepath = '/home/d9smith/projects/random_effects/plots/results_2023-03-03/FASE/horiz';
 
 % Specify visual preferences for plotting
-legendPosition = 'East'; % 'South' or 'East'
+legendPosition = 'South'; % 'South' or 'East'
 title = 1; % whether to include title at top of plot
 polarity = 1;
 curvcontrast = [0.2 0.2]; % contrast of gyri/sulci
@@ -84,13 +84,13 @@ for i=1:length(pheno_list)
     clim = [fmin fmax]; 
     
     % Create figure
-    fh = figure('Units', 'centimeters', 'Position', [10 10 16 3], 'Color', bgcol, 'InvertHardcopy', 'off');
+    fh = figure('Units', 'centimeters', 'Position', [10 10 16 5], 'Color', bgcol, 'InvertHardcopy', 'off');
     
     % Define spacing for axes
     hvgap = [0.02 0.02];
     if strcmpi(legendPosition, 'south')
         lrgap = [0.02 0.02];
-        btgap = [0.12 0.01];
+        btgap = [0.2 0.01];
     else
         if strcmpi(legendPosition, 'east')
           % lrgap = [0.02 0.138];
@@ -100,7 +100,7 @@ for i=1:length(pheno_list)
     end
     
     % Create axes
-    allH = tight_subplot(1, 4, hvgap, btgap, lrgap);
+    allH = tight_subplot(1,4, hvgap, btgap, lrgap);
     hold(allH(:), 'on');
 
     cm = fire;
@@ -125,6 +125,7 @@ for i=1:length(pheno_list)
         cb.Location = 'south';
         cb.Position(1)      = allH(1).Position(1);
         cb.Position(2)      = cb.Position(2) - btgap(1);
+        cb.Position(3)      = 1- allH(1).Position(1) - hvgap(1);
     else
         if strcmpi(legendPosition, 'east')
           cb.Location = 'eastoutside';
