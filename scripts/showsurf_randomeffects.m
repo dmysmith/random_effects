@@ -143,7 +143,7 @@ else
 
 
 
-          allH = tight_subplot(4, 1, hvgap, btgap, lrgap);
+          allH = tight_subplot(1, 4, hvgap, btgap, lrgap);
           hold(allH(:), 'on');
     
           axes(allH(1)); SurfView_show_new(surf_lh_pial,surf_rh_pial,vertvals_lh,vertvals_rh,fvals,cm,'left', [1 0],curvvec_lh,curvvec_rh,icsurfs{icnum},polarity,curvcontrast,bgcol); set(gca,'visible','off'); axis tight;
@@ -174,11 +174,11 @@ else
                   if title
                       cb.Position(1)      = allH(1).Position(1);
                       cb.Position(2)      = cb.Position(2) - hvgap(1);
-                      cb.Position(3)      = allH(1).Position(3)*2 + hvgap(1);
+                      cb.Position(3)      = allH(4).Position(3)*4 + hvgap(1);
                   else
                       cb.Position(1)      = allH(1).Position(1);
                       cb.Position(2)      = cb.Position(2) - btgap(1);
-                      cb.Position(3)      = allH(1).Position(3)*2 + hvgap(1);
+                      cb.Position(3)      = 1- allH(1).Position(1) - hvgap(1);
                   end
               else
                   if strcmpi(legendPosition, 'east')
