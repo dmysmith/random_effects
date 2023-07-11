@@ -84,8 +84,8 @@ fname_pregnancyID = fullfile('/home/sabad/requests/pregnancy_ID_01172023.csv');
 % SECTION 1: F, A, T, S, E
 
 % specify random effects - updating to accept a cell array
-% RandomEffects = {{'F','A','T','S','E'}};
-RandomEffects = {{'F','A','T','S','E'}; {'F','A','S','E'}};
+RandomEffects = {{'F','A','S','E'}};
+% RandomEffects = {{'F','A','T','S','E'}; {'F','A','S','E'}};
 
 for r=1:length(RandomEffects)
 
