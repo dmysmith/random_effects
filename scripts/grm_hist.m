@@ -78,7 +78,7 @@ set(gca, 'FontSize', fsz, 'LineWidth', alw); % Set properties
 histogram(GRM_tmp(find(maskmat_fam)), 100);
 % set(gca,'YScale', 'log');
 xlabel('Genetic Relatedness');
-title('Genetic Relatedness (Related Sample)');
+title('Genetic Relatedness (Within-Family)');
 
 if input('\nSave figure? (1 or 0) ')
     exportgraphics(gcf, '/home/d9smith/projects/random_effects/plots/hist_relsample.png', 'Resolution',300);
