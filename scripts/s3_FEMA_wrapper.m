@@ -18,7 +18,7 @@ diary(diary_path);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADD ALL ABCD CMIG tools directories to MATLAB path:
-addpath(genpath('/home/d9smith/github/cmig_tools_internal'))
+addpath(genpath('/home/d9smith/github/cmig_tools_internal'));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Specify data release
