@@ -2,11 +2,11 @@
 %% Run FEMA for random effects imaging analysis 
 %% Diana Smith
 %% Created March 2022
-%% Last Updated August 2022
+%% Last Updated Feb 2024 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Specify where to store results
-outpath = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-03-03';
+outpath = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2024-02-16';
 
 if ~exist(outpath, 'dir')
       mkdir(outpath)
@@ -31,12 +31,11 @@ abcd_sync_path=cfg.data.abcd_sync;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Specify which imaging analyses to demo
+% Specify which imaging analyses to run 
 doVertexwiseSmri = 1; % run vertexwise smri analysis (datatype = 'vertex')
 doVertexwiseDmri = 0; % run vertexwise dmri analysis
 doVoxelwiseSmri = 0; % run voxelwise smri analysis (datatype = 'voxel')
 doVoxelwiseDmri = 0; % run voxelwise dmri analysis (datatype = 'voxel')
-doMOSTest = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% INPUTS TO FEMA_wrapper.m
@@ -46,27 +45,16 @@ atlasVersion = 'ABCD2_cor10';
 dirname_tabulated = fullfile(abcd_sync_path,'4.0','tabulated/released'); %KNOWN ISSUE: breaks when using txt files following NDA release --> must use pre-release csv files
 fname_pihat = fullfile('/space/amdale/1/tmp/ABCD_cache/abcd-sync/4.0/genomics/ABCD_rel4.0_grm.mat'); 
 
-%To run multiple deisgn matrices with same imaging data populate each row with path to each design matrix
-designmat_dir = '/space/syn50/1/data/ABCD/d9smith/random_effects/designMat';
-designmat_file = dir(sprintf('%s/designMat*.txt', designmat_dir));
-% designmat_file = {designmat_file.name}';
-% fname_design = strcat(designmat_dir, '/', designmat_file);
-
-% only running one design mat at a time
 fname_design = '/space/syn50/1/data/ABCD/d9smith/random_effects/designMat/designMat02_t1w_AgeSexScanSoft.txt';
 designmat_file = 'designMat02_t1w_AgeSexScanSoft.txt';
 
 outdir_file = strrep(designmat_file, '.txt', '');
 outdir_path=strcat(outpath,'/',outdir_file);
 
-% for running just one designmat
-% fname_design = '/space/syn50/1/data/ABCD/d9smith/random_effects/designMat/designMat11_dmri_AgeSexScanSoftGest.txt';
-% outdir_path = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2023-02-07/designMat11_dmri_AgeSexScanSoftGest.txt';
-
 % Optional inputs for `FEMA_wrapper.m` depending on analysis
 contrasts=[]; % Contrasts relate to columns in design matrix e.g. [1 -1] will take the difference between cols 1 and 2 in your design matrix (X)
 ranknorm = 0; % Rank normalizes dependent variables (Y) (default = 0)
-nperms = 0; % Number of permutations - if wanting to use resampling methods nperms>0
+nperms = 1000; % Number of permutations - if wanting to use resampling methods nperms>0
 mediation = 0; % If wanting to use outputs for a mediation analysis set mediation=1 - ensures same resampling scheme used for each model in fname_design
 PermType = 'wildbootstrap'; %Default resampling method is null wild-bootstrap - to run mediation analysis need to use non-null wild-bootstrap ('wildboostrap-nn')
 tfce = 0; % If wanting to run threshold free cluster enhancement (TFCE) set tfce=1 (default = 0)
@@ -80,12 +68,7 @@ niter=0; % decrease number of iterations -- change when you want to run for real
 
 fname_pregnancyID = fullfile('/home/sabad/requests/pregnancy_ID_01172023.csv');
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 1: F, A, T, S, E
-
-% specify random effects - updating to accept a cell array
 RandomEffects = {{'F','A','S','E'}};
-% RandomEffects = {{'F','A','T','S','E'}; {'F','A','S','E'}};
 
 for r=1:length(RandomEffects)
 
@@ -123,27 +106,7 @@ for r=1:length(RandomEffects)
                   [fpaths_out beta_hat beta_se zmat logpmat sig2tvec sig2mat beta_hat_perm beta_se_perm zmat_perm sig2tvec_perm sig2mat_perm inputs mask tfce_perm analysis_params] = FEMA_wrapper(fstem_imaging, fname_design, dirname_out, dirname_tabulated, dirname_imaging, datatype,...
                   'ico', ico, 'ranknorm', ranknorm, 'contrasts', contrasts, 'RandomEffects', RandomEffects{r}, 'pihat_file', fname_pihat, 'nperms', nperms, 'mediation',mediation,'PermType',PermType,'tfce',tfce,'preg_file',fname_pregnancyID,'colsinterest',colsinterest);
             end
-  
-            %%
-            if doMOSTest && nperms>0
-                  % Compute the MOSTest statistics with the permutation scheme
-                  if strcmp(modality,'smri')
-                        % Set regularization factor
-                        % has only been computed for smri thickness & surface area for now
-                        if contains(fstem_imaging, 'thickness')
-                              k=47;
-                        elseif contains(fstem_imaging, 'area')
-                              k=79;
-                        else
-                              warning('Regularization has not been optimized for this set of parameters. MOSTest results are probably off.')
-                        end
-                        alpha = 0.05;
-                        col_interest = 1;
-                        [vertex_MOSTest_perm_pval, vertex_MOSTest_extrap_pval, vertex_MOSTest_mostvec, ...
-                              vertex_MOSTest_cthresh] = FEMA_MOSTest(zmat_perm, col_interest, alpha, k);
-                        sprintf('MOSTest results: p-value=%.3f, extrapolated p-value=%.3f.', perm_pval, extrap_pval)
-                  end
-            end 
+   
       end
 
       if doVertexwiseSmri
@@ -179,27 +142,7 @@ for r=1:length(RandomEffects)
                 'ico', ico, 'ranknorm', ranknorm, 'contrasts', contrasts, 'RandomEffects', RandomEffects{r}, 'pihat_file', fname_pihat, 'nperms', nperms, 'mediation',mediation,'PermType',PermType,'tfce',tfce,'preg_file',fname_pregnancyID,'colsinterest',colsinterest,...
                 'Hessflag',Hessflag,'ciflag',ciflag,'logLikflag',logLikflag,'RandomEstType',RandomEstType);
           end
-
-          %%
-          if doMOSTest && nperms>0
-                % Compute the MOSTest statistics with the permutation scheme
-                if strcmp(modality,'smri')
-                      % Set regularization factor
-                      % has only been computed for smri thickness & surface area for now
-                      if contains(fstem_imaging, 'thickness')
-                            k=47;
-                      elseif contains(fstem_imaging, 'area')
-                            k=79;
-                      else
-                            warning('Regularization has not been optimized for this set of parameters. MOSTest results are probably off.')
-                      end
-                      alpha = 0.05;
-                      col_interest = 1;
-                      [vertex_MOSTest_perm_pval, vertex_MOSTest_extrap_pval, vertex_MOSTest_mostvec, ...
-                            vertex_MOSTest_cthresh] = FEMA_MOSTest(zmat_perm, col_interest, alpha, k);
-                      sprintf('MOSTest results: p-value=%.3f, extrapolated p-value=%.3f.', perm_pval, extrap_pval)
-                end
-          end
+ 
       end
 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
