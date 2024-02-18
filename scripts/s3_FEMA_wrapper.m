@@ -6,7 +6,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Specify where to store results
-outpath = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2024-02-16';
+outpath = '/space/syn50/1/data/ABCD/d9smith/random_effects/results_2024-02-17';
 
 if ~exist(outpath, 'dir')
       mkdir(outpath)
@@ -54,14 +54,14 @@ outdir_path=strcat(outpath,'/',outdir_file);
 % Optional inputs for `FEMA_wrapper.m` depending on analysis
 contrasts=[]; % Contrasts relate to columns in design matrix e.g. [1 -1] will take the difference between cols 1 and 2 in your design matrix (X)
 ranknorm = 0; % Rank normalizes dependent variables (Y) (default = 0)
-nperms = 1000; % Number of permutations - if wanting to use resampling methods nperms>0
+nperms = 0; % Number of permutations - if wanting to use resampling methods nperms>0
 mediation = 0; % If wanting to use outputs for a mediation analysis set mediation=1 - ensures same resampling scheme used for each model in fname_design
 PermType = 'wildbootstrap'; %Default resampling method is null wild-bootstrap - to run mediation analysis need to use non-null wild-bootstrap ('wildboostrap-nn')
 tfce = 0; % If wanting to run threshold free cluster enhancement (TFCE) set tfce=1 (default = 0)
 RandomEstType = 'ML'; % specify random effects estimator (default is MoM)
 Hessflag=0;
 logLikflag=0;
-ciflag=0;
+ciflag=1;
 
 colsinterest=[1]; % Only used if nperms>0. Indicates which IVs (columns of X) the permuted null distribution and TFCE statistics will be saved for (default 1, i.e. column 1)
 niter=0; % decrease number of iterations -- change when you want to run for real!
